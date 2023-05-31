@@ -4,7 +4,7 @@
 import numpy as np
 
 N_neurons = 6
-init_max_weight = 0.05
+init_max_weight = 0.1
 
 # Network dimensions are 6x6 (fully_connected)
 # Initializing random weights for all synapses.
@@ -22,8 +22,8 @@ class Network:
         # used for updating synaptic weights
         self.pre_spiked = [0, 1, 0, 0, 0, 0]
         # clip the weights to a max and min value
-        self.max_W = 1
-        self.min_W = 0
+        self.max_W = 2
+        self.min_W = -2
 
     def update_camera_neu(self):
         """Spike if good, ideal or course correction forward translation"""

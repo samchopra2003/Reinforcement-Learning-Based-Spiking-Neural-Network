@@ -1,6 +1,7 @@
 """Main file which will combine all the components."""
 from network import Network
-from spiking import evolve_network, update_weights, update_input_neuron_spike, plot
+from spiking import (evolve_network, update_weights, update_input_neuron_spike, plot,
+                     show_desired_gait_time)
 from gyro import Gyro
 from camera import Camera
 # from testing import forecast
@@ -15,7 +16,7 @@ time = 10000
 # camera reward coefficient
 T1 = 20
 # gamma = learning rate
-gamma = 0.15
+gamma = 0.0015
 
 """Main loop (following master algorithm)"""
 def main():
@@ -28,8 +29,8 @@ def main():
     reward = np.zeros(time)
 
     # forecast()
-
-    t_break = 0
+    max_reward = 0
+    max_reward_legs_moved = []
 
     for t in tqdm(range(2, time)):
 
@@ -44,7 +45,6 @@ def main():
 
         # if robot has fallen, terminate this episode
         if fell: 
-            t_break = t
             break
 
         # if balanced set the gyro spike
@@ -56,7 +56,6 @@ def main():
 
         # if robot not showing forward translation, terminate this episode
         if bad_streak: 
-            t_break = t
             break
 
         # if good forward translation, set camera spike
@@ -65,9 +64,14 @@ def main():
         # calculate reward
         reward[t] = gyro.reward + cam.reward * (1/T1)
 
+        # calculating max reward and corresponding legs moved
+        if max_reward < reward[t]:
+            max_reward = reward[t]
+            max_reward_legs_moved = neu_spiked
+
         # update synaptic weights
         update_weights(reward=reward[t], learning_rate=gamma,
-                       spiked_neu=neu_spiked)
+                       spiked_neu=neu_spiked, t=t)
 
         
         
@@ -81,9 +85,16 @@ def main():
     # Plot Vm evolution at the end
     plot()
 
-    # see first 100 rewards
-    # print(reward[t_break-20:t_break])
-    # print(gyro.current_balance)
+    # Show desired gait times
+    desired_gait_time = show_desired_gait_time()
+    print("desired gait times=", desired_gait_time)
+
+
+    # max reward obtained at a single time step
+    print(max_reward)
+    print(max_reward_legs_moved)
+    
+
 
 
 

@@ -57,11 +57,11 @@ class Camera:
         # two legs on the same side moving together
         elif abs(self.dir_angle - init_dir) == 10:
             self.no_forward += 1
-            self.reward = 1
+            self.reward = -1
             self.good_forward_move = False
         
         # case of ideal translation
-        elif abs(self.dir_angle - init_dir) <= 5:
+        elif abs(self.dir_angle - init_dir) < 5:
             self.no_forward = 0
             self.reward = 5
             self.good_forward_move = True
@@ -69,7 +69,7 @@ class Camera:
         # good forward translation
         elif abs(self.dir_angle - init_dir) <= 5:
             self.no_forward = 0
-            self.reward = 3
+            self.reward = 2
             self.good_forward_move = True
 
         # case of course correction
@@ -81,7 +81,7 @@ class Camera:
         # all other cases (between bad and good forward translation)
         else:
             self.no_forward = 0
-            self.reward = 2
+            self.reward = 0
             self.good_forward_move = True
 
         # terminate episode if no forward transation occuring

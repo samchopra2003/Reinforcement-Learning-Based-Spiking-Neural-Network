@@ -6,7 +6,7 @@ from spiking import (sim_evolve_normal, plot,
 # Vm evolution forecast at start before RL 
 def test():
 
-    for t in range(2, 30000):
+    for t in range(2, 10000):
         _ = evolve_network(t)
         # if t < 20:
         #     print_spiked_limbs()

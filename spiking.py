@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-import math
 from network import Network
-
 
 
 R = 1 # 200 ohms
@@ -10,10 +8,9 @@ k = 0 #W
 time = 10000
 N_neurons = 4
 
-# def exp_dec(scale_syn,t):
-#     return math.exp(-1*k*t)*scale_syn
 
 def pwl(x,alpha,beta,delta):
+    """PWL tanh function"""
     ub=(alpha/beta)+delta
     lb=(-alpha/beta)+delta
     if isinstance(x,np.ndarray):
@@ -59,8 +56,8 @@ beta = [-2, 2, -1.5, 5]
 
 Cm =  1   # 5 micro Farad
 
-# Iapp=[-2, -1.8, -1.8, -1.8]
-Iapp=[-1.5, -1.5, -1.5, -1.5]
+Iapp=[-2, -1.8, -1.8, -1.8]
+# Iapp=[-1.5, -1.5, -1.5, -1.5]
 
 I = np.zeros((N_neurons,time))
 for i in range(N_neurons):
@@ -80,9 +77,7 @@ tauus = 50 * 50
 dT = 1 # 1 milli second
 
 Erev=0.48
-Vthresh=1.6
-
-# spiked = [0, 0, 0, 0]
+Vthresh=1.9
 
 eventp = []#-1*np.ones(N_neurons)
 for i in range(N_neurons):
@@ -96,6 +91,7 @@ W = net.W_Synapse[2:]
 W = np.delete(W, [0, 1], axis=1)
 # print("W=", W)
 
+
 def update_input_neuron_spike(input: str):
     """Update the input neuron spike"""
     if input == "gyro":
@@ -106,9 +102,9 @@ def update_input_neuron_spike(input: str):
 
 spiked_neu = []
 # print(net.W_Synapse)
-""" Function to evolve the membrane voltage of neurons"""
-def evolve_network(t : int) -> list:
 
+def evolve_network(t : int) -> list:
+    """ Function to evolve the membrane voltage of neurons"""
     for cur_neu in range(N_neurons):
         dVfdT = (Vm[cur_neu][t - 1] - Vf[cur_neu][t - 1]) / tauf
         dVsdT = (Vm[cur_neu][t - 1] - Vs[cur_neu][t - 1]) / taus
@@ -153,7 +149,8 @@ def evolve_network(t : int) -> list:
     return spiked_neu
 
 
-def weight_update_combination(spiked_neu) -> list:
+desired_gait_time = []
+def weight_update_combination(spiked_neu, t) -> list:
     """Determines the combinations of neurons for synaptic
     weight updates."""
     # dictionary with all neuron combos used
@@ -168,8 +165,12 @@ def weight_update_combination(spiked_neu) -> list:
     pre_spiked_neu = []
     for neu, spike in enumerate(net.pre_spiked[2:], start=2):
         if spike == 1: pre_spiked_neu.append(neu - 2)
-    # print(pre_spiked_neu)
-    # print(spiked_neu)
+
+    # desired gait
+    if (0 and 2 in pre_spiked_neu and 1 and 3 in spiked_neu) or \
+    (1 and 3 in pre_spiked_neu and 0 and 2 in spiked_neu):
+        desired_gait_time.append(t)
+        
 
     for pre in pre_spiked_neu:
         for cur in spiked_neu:
@@ -185,9 +186,9 @@ def weight_update_combination(spiked_neu) -> list:
     return to_be_updated_weights
 
 
-def update_weights(reward, learning_rate, spiked_neu) -> None:
+def update_weights(reward, learning_rate, spiked_neu, t) -> None:
     """Updating CPG neuron weights"""
-    combos = weight_update_combination(spiked_neu)
+    combos = weight_update_combination(spiked_neu, t)
     # print("combos=", combos)
     for i in range(len(combos)):
         # apply synaptic weight update calculation on CPG neurons
@@ -196,7 +197,7 @@ def update_weights(reward, learning_rate, spiked_neu) -> None:
 
         # print(f"net.W_Synapse[{pre}][{post}] before = ", net.W_Synapse[pre][post])
         net.W_Synapse[pre][post] += \
-            learning_rate * reward * np.random.random()*0.01
+            learning_rate * reward * np.random.random()
         # print(f"net.W_Synapse[{pre}][{post}] after = ", net.W_Synapse[pre][post])
         
         # Clip the weights to maximum and minimum
@@ -265,7 +266,15 @@ def plot():
 
 
 def print_spiked_limbs():
+    """Print spiked limbs test."""
     print(f"Spiked neurons (limbs): {spiked_neu}")
+
+
+
+def show_desired_gait_time() -> list:
+    """Show desired gait times as a list."""
+    return desired_gait_time
+
 
 
 # variables redefined for testing purposes
