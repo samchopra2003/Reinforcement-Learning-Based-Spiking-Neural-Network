@@ -28,7 +28,7 @@ Similarly, `camera.py` is simulating the camera reward for the robot by setting 
 
 `testing.py` is a file for unit testing for some functions, not relevant to the working of the code.
 
-Lastly, although an episode lasts for 10000 time steps in the current code, the episode may terminate sooner, if the robot falls down or when the robot makes 50 bad moves ina row, and thus no forward translation is achieved. In that case, the code will terminate then and there, and display a message in the terminal.
+Lastly, although an episode lasts for 10000 time steps in the current code, the episode may terminate sooner, if the robot falls down or when the robot makes 50 bad moves in a row, and thus no forward translation is achieved. In that case, the code will terminate then and there, and display a message in the terminal.
 
 ## TODO
 
