@@ -51,13 +51,12 @@ def pwl(x,alpha,beta,delta):
 
 alpha = [-2, 2, -1.5, 2] # In the order of alpha_f_neg, alpha_s_pos, alpha_s_neg, alpha_us_neg
 delta = [0, 0, -0.88, 0] # In the order of delta_f_N, delta_s_P, delta_s_N, delta_us_N
-beta = [-2, 2, -1.5, 5]
+beta = [-2, 2, -1.5, 35]
 
 
 Cm =  1   # 5 micro Farad
 
-Iapp=[-2, -1.8, -1.8, -1.8]
-# Iapp=[-1.5, -1.5, -1.5, -1.5]
+Iapp=[-0.2, -1.8, -1.8, -1.8]
 
 I = np.zeros((N_neurons,time))
 for i in range(N_neurons):
@@ -121,7 +120,7 @@ def evolve_network(t : int) -> list:
 
         Isum = 0
         for conn in range(N_neurons):
-            Isum += (W[cur_neu][conn] * (Erev - Vm[conn][t]) + 
+            Isum += (W[cur_neu][conn] * (Erev - Vm[conn][t-1]) + 
                         net.W_Synapse[0][conn+2] * net.spiked[0] + 
                             net.W_Synapse[1][conn+2] * net.spiked[1])
 
