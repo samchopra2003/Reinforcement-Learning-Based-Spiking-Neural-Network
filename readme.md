@@ -32,8 +32,16 @@ Lastly, although an episode lasts for 10000 time steps in the current code, the 
 
 ## TODO
 
-- Obtain the desired gait consistently, the `desired_gait_time` list shows the time stamps of when the desired gait pattern has occurred.
+- Make sure all 4 legs moving, if 25+ time steps occur without a particular leg moving terminate episode. Implement this in camera.py.
 
 - Might have to improve the complexity of the physics environment.
 
-- Might have to improve the synaptic weight update calculation, and do some error calculations and corrections (not implement in original paper).
+- Might have to improve the synaptic weight update calculation, and do some error calculations and corrections (not implemented in original paper).
+
+- Clean up code!
+
+## New Updates
+
+- Desired gait pattern achieved with 0.8 `init_max_weight` and some other changes in `spiking.py`! All-time best cumulative rewards achieved:
+
+![Best Cumu Reward Plot](best_cumu_reward.jpg)

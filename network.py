@@ -4,7 +4,7 @@
 import numpy as np
 
 N_neurons = 6
-init_max_weight = 0.1
+init_max_weight = 0.8
 
 # Network dimensions are 6x6 (fully_connected)
 # Initializing random weights for all synapses.

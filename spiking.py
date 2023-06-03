@@ -134,6 +134,7 @@ def evolve_network(t : int) -> list:
         Vm[cur_neu][t] = Vm[cur_neu][t - 1] + (dVmdT * dT)
         # print(Isum, I_x + I_P, cur_neu, t, Vm[cur_neu][t])
 
+        # updating net.spiked
         if Vm[cur_neu][t] > Vthresh and Vm[cur_neu][t-1] < Vthresh:
             net.spiked[cur_neu+2] = 1
             eventp[cur_neu].append(t)
@@ -144,7 +145,9 @@ def evolve_network(t : int) -> list:
         if spike == 1: spiked_neu.append(neu - 2)
 
     # reset spiked
-    net.reset()
+    # net.reset()
+    net.spiked[0] = net.spiked[1] = 0
+    # print(net.spiked)
 
     return spiked_neu
 
@@ -167,8 +170,9 @@ def weight_update_combination(spiked_neu, t) -> list:
         if spike == 1: pre_spiked_neu.append(neu - 2)
 
     # desired gait
-    if (0 and 2 in pre_spiked_neu and 1 and 3 in spiked_neu) or \
-    (1 and 3 in pre_spiked_neu and 0 and 2 in spiked_neu):
+    # print("pre_spiked_neu=", pre_spiked_neu, "spiked_neu=", spiked_neu)
+    if (pre_spiked_neu == [0, 3] and spiked_neu == [1, 2]) or \
+    (pre_spiked_neu == [1, 2] and spiked_neu == [0, 3]):
         desired_gait_time.append(t)
         
 
@@ -208,7 +212,10 @@ def update_weights(reward, learning_rate, spiked_neu, t) -> None:
             net.W_Synapse[pre][post] = net.min_W
 
     # update the pre_spiked array
+    # net.pre_spiked = [0, 0] + [x for x in spiked_neu]
     net.pre_spiked = net.spiked
+    net.reset()
+    # print(net.spiked)
 
 
 def plot():
